@@ -134,7 +134,7 @@ exports.executeTrade = async (req, res) => {
         
         const { type, symbol, companyName, quantity, price } = req.body;
         const user = req.user; // Get user from request object (set by ensureUser middleware)
-        console.log('user, :')
+        console.log('user, :', user)
         // Validate input
         if (!type || !symbol || !companyName || !quantity || !price) {
             return res.status(400).json({
