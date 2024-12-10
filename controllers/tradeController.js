@@ -132,11 +132,11 @@ exports.executeTrade = async (req, res) => {
     try {
         console.log('Received trade request:', req.body);
         
-        const { type, symbol, name, quantity, price } = req.body;
+        const { type, symbol, companyName, quantity, price } = req.body;
         const user = req.user; // Get user from request object (set by ensureUser middleware)
 
         // Validate input
-        if (!type || !symbol || !name || !quantity || !price) {
+        if (!type || !symbol || !companyName || !quantity || !price) {
             return res.status(400).json({
                 success: false,
                 message: 'Missing required fields'
