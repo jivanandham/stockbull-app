@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Edit User</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="https://unpkg.com/aos@next/dist/aos.css" />
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="/css/header-footer.css">
+  <link rel="stylesheet" href="/css/navbar.css">
+  <link rel="stylesheet" href="/css/admin-navbar.css">
+  <link rel="stylesheet" href="/css/admin-dashboard.css">
+</head>
+<body>
+  <%- include('../partials/navbar') %>
+  <%- include('../partials/admin-navbar') %>
+
+  <div class="container py-4">
+    <div class="row justify-content-center">
+      <div class="col-lg-8">
+        <div class="dashboard-card" data-aos="fade-up">
+          <div class="card-header">
+            <i class="fas fa-user-edit"></i>
+            <span class="badge bg-primary">Edit User</span>
+          </div>
+          <h3>Edit User Information</h3>
+          
+          <form id="editUserForm" class="mt-4">
+            <input type="hidden" name="userId" value="<%= user._id %>">
+            
+            <!-- Basic Information -->
+            <div class="section-title">
+              <i class="fas fa-user"></i>
+              Basic Information
+            </div>
+
+            <div class="mb-4">
+              <label class="form-label">Full Name</label>
+              <div class="input-group">
+                <span class="input-group-text"><i class="fas fa-user"></i></span>
+                <input type="text" class="form-control" name="name" value="<%= user.name %>" required>
+              </div>
+            </div>
+
+            <div class="mb-4">
+              <label class="form-label">Email</label>
+              <div class="input-group">
+                <span class="input-group-text"><i class="fas fa-envelope"></i></span>
+                <input type="email" class="form-control" name="email" value="<%= user.email %>" required>
+              </div>
+            </div>
+
+            <!-- Account Settings -->
+            <div class="section-title">
+              <i class="fas fa-cog"></i>
+              Account Settings
+            </div>
+
+            <div class="mb-4">
+              <label class="form-label">Account Status</label>
+              <div class="input-group">
+                <span class="input-group-text"><i class="fas fa-user-shield"></i></span>
+                <select class="form-select" name="status">
+                  <option value="active" <%= user.status === 'active' ? 'selected' : '' %>>Active</option>
+                  <option value="inactive" <%= user.status === 'inactive' ? 'selected' : '' %>>Inactive</option>
+                  <option value="suspended" <%= user.status === 'suspended' ? 'selected' : '' %>>Suspended</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="mb-4">
+              <label class="form-label">Trading Limit</label>
+              <div class="input-group">
+                <span class="input-group-text"><i class="fas fa-dollar-sign"></i></span>
+                <input type="number" class="form-control" name="tradingLimit" value="<%= user.tradingLimit %>" min="0" step="1000">
+                <span class="input-group-text">USD</span>
+              </div>
+              <small class="text-muted">Maximum amount the user can trade</small>
+            </div>
+
+            <!-- Contact Information -->
+            <div class="section-title">
+              <i class="fas fa-address-card"></i>
+              Contact Information
+            </div>
+
+            <div class="mb-4">
+              <label class="form-label">Phone Number</label>
+              <div class="input-group">
+                <span class="input-group-text"><i class="fas fa-phone"></i></span>
+                <input type="tel" class="form-control" name="contactNumber" value="<%= user.contactNumber || '' %>" placeholder="Enter phone number">
+              </div>
+            </div>
+
+            <div class="mb-4">
+              <label class="form-label">Bio</label>
+              <div class="input-group">
+                <span class="input-group-text"><i class="fas fa-info-circle"></i></span>
+                <textarea class="form-control" name="bio" rows="3" placeholder="User biography"><%= user.bio || '' %></textarea>
+              </div>
+            </div>
+
+            <!-- Watchlist -->
+            <div class="section-title">
+              <i class="fas fa-star"></i>
+              Watchlist
+            </div>
+
+            <div class="watchlist-container mb-4">
+              <% if (user.watchlist && user.watchlist.length > 0) { %>
+                <div class="table-responsive">
+                  <table class="table table-hover">
+                    <thead>
+                      <tr>
+                        <th>Symbol</th>
+                        <th>Added Date</th>
+                        <th>Actions</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <% user.watchlist.forEach(item => { %>
+                        <tr>
+                          <td><%= item.symbol %></td>
+                          <td><%= new Date(item.addedAt).toLocaleDateString() %></td>
+                          <td>
+                            <button type="button" class="btn btn-sm btn-danger remove-watchlist" data-symbol="<%= item.symbol %>">
+                              <i class="fas fa-trash-alt"></i>
+                            </button>
+                          </td>
+                        </tr>
+                      <% }); %>
+                    </tbody>
+                  </table>
+                </div>
+              <% } else { %>
+                <p class="text-muted">No items in watchlist</p>
+              <% } %>
+            </div>
+
+            <div class="actions">
+              <button type="submit" class="action-btn primary">
+                <i class="fas fa-save"></i>
+                Save Changes
+              </button>
+              <a href="/admin/users" class="action-btn secondary">
+                <i class="fas fa-times"></i>
+                Cancel
+              </a>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <%- include('../partials/footer') %>
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+  <script src="https://unpkg.com/aos@next/dist/aos.js"></script>
+  <script>
+    AOS.init({
+      duration: 800,
+      once: true
+    });
+
+    // Form Submission
+    document.getElementById('editUserForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const formData = new FormData(e.target);
+      
+      try {
+        const response = await fetch('/admin/users/update', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            userId: formData.get('userId'),
+            name: formData.get('name'),
+            email: formData.get('email'),
+            status: formData.get('status'),
+            tradingLimit: formData.get('tradingLimit'),
+            contactNumber: formData.get('contactNumber'),
+            bio: formData.get('bio')
+          })
+        });
+
+        const data = await response.json();
+        if (data.success) {
+          showAlert('success', 'User updated successfully');
+          setTimeout(() => {
+            window.location.href = '/admin/users';
+          }, 1500);
+        } else {
+          showAlert('error', data.message || 'Failed to update user');
+        }
+      } catch (error) {
+        console.error('Error updating user:', error);
+        showAlert('error', 'Failed to update user');
+      }
+    });
+
+    // Remove from Watchlist
+    document.querySelectorAll('.remove-watchlist').forEach(button => {
+      button.addEventListener('click', async (e) => {
+        const symbol = e.currentTarget.dataset.symbol;
+        const userId = document.querySelector('input[name="userId"]').value;
+        
+        try {
+          const response = await fetch('/admin/users/watchlist/remove', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+              userId,
+              symbol
+            })
+          });
+
+          const data = await response.json();
+          if (data.success) {
+            e.currentTarget.closest('tr').remove();
+            showAlert('success', 'Symbol removed from watchlist');
+          } else {
+            showAlert('error', data.message || 'Failed to remove symbol');
+          }
+        } catch (error) {
+          console.error('Error removing symbol:', error);
+          showAlert('error', 'Failed to remove symbol');
+        }
+      });
+    });
+
+    // Alert function
+    function showAlert(type, message) {
+      const alertDiv = document.createElement('div');
+      alertDiv.className = `alert alert-${type === 'success' ? 'success' : 'danger'} alert-dismissible fade show position-fixed top-0 end-0 m-3`;
+      alertDiv.innerHTML = `
+        ${message}
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+      `;
+      document.body.appendChild(alertDiv);
+      setTimeout(() => alertDiv.remove(), 5000);
+    }
+  </script>
+</body>
+</html>

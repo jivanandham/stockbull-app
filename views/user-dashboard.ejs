@@ -1,0 +1,862 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Dashboard</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/header-footer.css">
+    <link rel="stylesheet" href="/css/navbar.css">
+    <link rel="stylesheet" href="/css/user-navbar.css">
+    <link rel="stylesheet" href="/css/user-dashboard.css">
+    <link rel="stylesheet" href="/css/dashboard-header.css">
+    <link rel="stylesheet" href="https://unpkg.com/aos@next/dist/aos.css" />
+</head>
+<body>
+  <!-- Include User Navbar -->
+  <%- include('partials/navbar') %>
+  <%- include('partials/user-navbar') %>
+
+  <%- include('partials/dashboard-header', {
+    title: 'Portfolio Overview',
+    description: 'Track your investments and market performance',
+    showBalance: false,
+    actionButton: '<button class="btn btn-light" onclick="refreshHoldings()"><i class="bi bi-arrow-clockwise"></i> Refresh Data</button>'
+  }) %>
+
+  <div class="container mb-4">
+    <div class="row">
+      <div class="col-md-3 mb-4" data-aos="fade-up" data-aos-delay="100">
+        <div class="market-card">
+          <div class="card-body">
+            <h6 class="text-muted mb-2">Total Investment</h6>
+            <div class="market-data">
+              <div class="price">$<%= portfolio.totalInvestment.toFixed(2) %></div>
+              <small class="text-muted">Total Capital Invested</small>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-md-3 mb-4" data-aos="fade-up" data-aos-delay="200">
+        <div class="market-card">
+          <div class="card-body">
+            <h6 class="text-muted mb-2">Market Value</h6>
+            <div class="market-data">
+              <div class="price">$<%= portfolio.totalCurrentValue.toFixed(2) %></div>
+              <small class="text-muted">Current Portfolio Value</small>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-md-3 mb-4" data-aos="fade-up" data-aos-delay="300">
+        <div class="market-card">
+          <div class="card-body">
+            <h6 class="text-muted mb-2">Total Profit/Loss</h6>
+            <div class="market-data">
+              <div class="price <%= portfolio.totalProfitLoss >= 0 ? 'text-success' : 'text-danger' %>">
+                <%= portfolio.totalProfitLoss >= 0 ? '+' : '-' %>$<%= Math.abs(portfolio.totalProfitLoss).toFixed(2) %>
+              </div>
+              <span class="change <%= portfolio.totalProfitLoss >= 0 ? 'positive' : 'negative' %>">
+                <%= portfolio.totalProfitLoss >= 0 ? '+' : '' %><%= portfolio.totalProfitLossPercent.toFixed(2) %>%
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-md-3 mb-4" data-aos="fade-up" data-aos-delay="400">
+        <div class="market-card">
+          <div class="card-body">
+            <h6 class="text-muted mb-2">Holdings</h6>
+            <div class="market-data">
+              <div class="price"><%= portfolio.holdings.length %></div>
+              <small class="text-muted">Active Positions</small>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="row mt-4">
+      <div class="col-12" data-aos="fade-up" data-aos-delay="100">
+        <div class="market-card">
+          <div class="card-body">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+              <h5 class="card-title mb-0">Current Holdings</h5>
+              <button class="btn btn-primary" onclick="openTradeModal('buy')">
+                <i class="bi bi-plus-lg"></i> New Trade
+              </button>
+            </div>
+            <% if (portfolio.holdings.length > 0) { %>
+              <div class="table-responsive">
+                <table class="table">
+                  <thead>
+                    <tr>
+                      <th>Symbol</th>
+                      <th>Company</th>
+                      <th>Quantity</th>
+                      <th>Buy Price</th>
+                      <th>Current Price</th>
+                      <th>Market Value</th>
+                      <th>Profit/Loss</th>
+                      <th>Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody id="holdingsTableBody">
+                    <% portfolio.holdings.forEach(holding => { %>
+                      <tr>
+                        <td><strong><%= holding.symbol %></strong></td>
+                        <td><%= holding.companyName %></td>
+                        <td><%= holding.quantity %></td>
+                        <td>$<%= holding.avgPrice.toFixed(2) %></td>
+                        <td>
+                          $<%= holding.currentPrice.toFixed(2) %>
+                          <% if (holding.priceChange !== undefined) { %>
+                            <span class="change <%= holding.priceChange >= 0 ? 'positive' : 'negative' %>">
+                              <%= holding.priceChange >= 0 ? '+' : '' %><%= holding.priceChange.toFixed(2) %>%
+                            </span>
+                          <% } %>
+                        </td>
+                        <td>$<%= holding.currentValue.toFixed(2) %></td>
+                        <td>
+                          <div class="<%= holding.profitLoss >= 0 ? 'text-success' : 'text-danger' %>">
+                            <%= holding.profitLoss >= 0 ? '+' : '-' %>$<%= Math.abs(holding.profitLoss).toFixed(2) %>
+                            <small>(<%= holding.profitLoss >= 0 ? '+' : '' %><%= holding.profitLossPercent.toFixed(2) %>%)</small>
+                          </div>
+                        </td>
+                        <td>
+                          <div class="btn-group">
+                            <button class="btn btn-sm btn-outline-primary" onclick="openTradeModal('buy', '<%= holding.symbol %>', <%= holding.currentPrice %>, '<%= holding.companyName %>')">Buy</button>
+                            <button class="btn btn-sm btn-outline-danger" onclick="openTradeModal('sell', '<%= holding.symbol %>', <%= holding.currentPrice %>, '<%= holding.companyName %>')">Sell</button>
+                          </div>
+                        </td>
+                      </tr>
+                    <% }); %>
+                  </tbody>
+                </table>
+              </div>
+            <% } else { %>
+              <div class="empty-state">
+                <i class="bi bi-bar-chart-line"></i>
+                <p>No holdings yet. Start trading to build your portfolio!</p>
+                <button class="btn btn-primary mt-3" onclick="openTradeModal('buy')">
+                  <i class="bi bi-plus-lg"></i> Make Your First Trade
+                </button>
+              </div>
+            <% } %>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Charts Section -->
+  <div class="charts-section mb-4">
+    <div class="container">
+      <div class="row">
+        <div class="col-12 mb-4" data-aos="fade-up" data-aos-delay="100">
+          <div class="card">
+            <div class="card-body">
+              <div class="d-flex justify-content-between align-items-center mb-3">
+                <h5 class="card-title mb-0">Market Overview</h5>
+                <div class="btn-group" role="group">
+                  <button type="button" class="btn btn-outline-primary" data-period="1D">1D</button>
+                  <button type="button" class="btn btn-outline-primary" data-period="1W">1W</button>
+                  <button type="button" class="btn btn-outline-primary active" data-period="1M">1M</button>
+                  <button type="button" class="btn btn-outline-primary" data-period="1Y">1Y</button>
+                </div>
+              </div>
+              <div id="main-chart" style="height: 400px;"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-md-6 mb-3" data-aos="fade-up" data-aos-delay="200">
+          <div class="card">
+            <div class="card-body">
+              <h5 class="card-title">S&P 500 Performance</h5>
+              <div id="sp500-chart" style="height: 300px;"></div>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-6 mb-3" data-aos="fade-up" data-aos-delay="300">
+          <div class="card">
+            <div class="card-body">
+              <h5 class="card-title">NASDAQ Performance</h5>
+              <div id="nasdaq-chart" style="height: 300px;"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Popular Stocks Section -->
+  <div class="container mb-4">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h5 class="mb-0">Popular Stocks</h5>
+                <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#addStockModal">
+                    <i class="bi bi-plus-lg"></i> Add to Watchlist
+                </button>
+            </div>
+            <div class="stock-carousel">
+                <div class="row">
+                    <!-- Stock Cards -->
+                    <div class="col-md-3 mb-3">
+                        <div class="stock-card">
+                            <div class="stock-info">
+                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                    <div>
+                                        <h6 class="mb-0">AAPL</h6>
+                                        <small class="text-muted">Apple Inc.</small>
+                                    </div>
+                                    <button class="btn btn-light btn-sm" onclick="toggleWatchlist(this, 'AAPL')">
+                                        <i class="bi bi-star"></i>
+                                    </button>
+                                </div>
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <h5 class="mb-0">$175.84</h5>
+                                    <span class="change positive">+1.45%</span>
+                                </div>
+                                <div class="btn-group">
+                                    <button class="btn btn-success btn-sm" onclick="openTradeModal('buy', 'AAPL', 175.84, 'Apple Inc.')">Buy</button>
+                                    <button class="btn btn-danger btn-sm" onclick="openTradeModal('sell', 'AAPL', 175.84, 'Apple Inc.')">Sell</button>
+                                </div>
+                            </div>
+                            <div class="stock-chart" id="chart-AAPL"></div>
+                        </div>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <div class="stock-card">
+                            <div class="stock-info">
+                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                    <div>
+                                        <h6 class="mb-0">MSFT</h6>
+                                        <small class="text-muted">Microsoft Corp.</small>
+                                    </div>
+                                    <button class="btn btn-light btn-sm" onclick="toggleWatchlist(this, 'MSFT')">
+                                        <i class="bi bi-star"></i>
+                                    </button>
+                                </div>
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <h5 class="mb-0">$376.17</h5>
+                                    <span class="change positive">+0.89%</span>
+                                </div>
+                                <div class="btn-group">
+                                    <button class="btn btn-success btn-sm" onclick="openTradeModal('buy', 'MSFT', 376.17, 'Microsoft Corp.')">Buy</button>
+                                    <button class="btn btn-danger btn-sm" onclick="openTradeModal('sell', 'MSFT', 376.17, 'Microsoft Corp.')">Sell</button>
+                                </div>
+                            </div>
+                            <div class="stock-chart" id="chart-MSFT"></div>
+                        </div>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <div class="stock-card">
+                            <div class="stock-info">
+                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                    <div>
+                                        <h6 class="mb-0">GOOGL</h6>
+                                        <small class="text-muted">Alphabet Inc.</small>
+                                    </div>
+                                    <button class="btn btn-light btn-sm" onclick="toggleWatchlist(this, 'GOOGL')">
+                                        <i class="bi bi-star"></i>
+                                    </button>
+                                </div>
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <h5 class="mb-0">$140.42</h5>
+                                    <span class="change negative">-0.32%</span>
+                                </div>
+                                <div class="btn-group">
+                                    <button class="btn btn-success btn-sm" onclick="openTradeModal('buy', 'GOOGL', 140.42, 'Alphabet Inc.')">Buy</button>
+                                    <button class="btn btn-danger btn-sm" onclick="openTradeModal('sell', 'GOOGL', 140.42, 'Alphabet Inc.')">Sell</button>
+                                </div>
+                            </div>
+                            <div class="stock-chart" id="chart-GOOGL"></div>
+                        </div>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <div class="stock-card">
+                            <div class="stock-info">
+                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                    <div>
+                                        <h6 class="mb-0">TSLA</h6>
+                                        <small class="text-muted">Tesla Inc.</small>
+                                    </div>
+                                    <button class="btn btn-light btn-sm" onclick="toggleWatchlist(this, 'TSLA')">
+                                        <i class="bi bi-star"></i>
+                                    </button>
+                                </div>
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <h5 class="mb-0">$248.48</h5>
+                                    <span class="change positive">+2.15%</span>
+                                </div>
+                                <div class="btn-group">
+                                    <button class="btn btn-success btn-sm" onclick="openTradeModal('buy', 'TSLA', 248.48, 'Tesla Inc.')">Buy</button>
+                                    <button class="btn btn-danger btn-sm" onclick="openTradeModal('sell', 'TSLA', 248.48, 'Tesla Inc.')">Sell</button>
+                                </div>
+                            </div>
+                            <div class="stock-chart" id="chart-TSLA"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+  </div>
+
+  <!-- Watchlist and News Section -->
+  <div class="container mb-4">
+    <div class="row">
+        <!-- Watchlist -->
+        <div class="col-md-6 mb-3">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">My Watchlist</h5>
+                    <button class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#addStockModal">
+                        <i class="bi bi-plus"></i> Add Stock
+                    </button>
+                </div>
+                <div class="card-body">
+                    <div id="watchlistContainer">
+                        <!-- Watchlist items will be dynamically loaded here -->
+                        <p class="text-muted">Loading watchlist...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Market News -->
+        <div class="col-md-6 mb-3">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Market News</h5>
+                </div>
+                <div class="card-body">
+                    <div class="news-items">
+                        <div class="news-item mb-3">
+                            <h6 class="mb-1">Fed Signals Potential Rate Cuts in 2024</h6>
+                            <p class="small text-muted mb-1">Federal Reserve officials indicated they expect to cut interest rates next year...</p>
+                            <small class="text-primary">2 hours ago</small>
+                        </div>
+                        <div class="news-item mb-3">
+                            <h6 class="mb-1">Tech Stocks Rally on AI Developments</h6>
+                            <p class="small text-muted mb-1">Major tech companies see gains as artificial intelligence adoption accelerates...</p>
+                            <small class="text-primary">4 hours ago</small>
+                        </div>
+                        <div class="news-item">
+                            <h6 class="mb-1">Oil Prices Stabilize Amid Global Demand</h6>
+                            <p class="small text-muted mb-1">Crude oil prices find stability as global demand shows signs of improvement...</p>
+                            <small class="text-primary">6 hours ago</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+  </div>
+
+  <!-- Trade Modal -->
+  <div class="modal fade" id="tradeModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="tradeModalLabel">Trade Stock</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="tradeForm">
+                    <input type="hidden" id="type" name="type">
+                    <input type="hidden" id="symbol" name="symbol">
+                    <input type="hidden" id="companyName" name="companyName">
+                    <div class="form-group">
+                        <label for="quantity">Quantity:</label>
+                        <input type="number" class="form-control" id="quantity" name="quantity" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="currentPrice">Current Price:</label>
+                        <input type="number" class="form-control" id="currentPrice" name="currentPrice" readonly>
+                    </div>
+                    <div class="form-group">
+                        <label for="totalValue">Total Value:</label>
+                        <input type="number" class="form-control" id="totalValue" name="totalValue" readonly>
+                    </div>
+                    <div class="form-group">
+                        <label for="availableBalance">Available Balance:</label>
+                        <input type="number" class="form-control" id="availableBalance" name="availableBalance" readonly>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Execute Trade</button>
+                </form>
+                <div id="tradeAlert" class="alert d-none mt-3"></div>
+            </div>
+        </div>
+    </div>
+  </div>
+
+  <!-- Add Stock Modal -->
+  <div class="modal fade" id="addStockModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Add Stock to Watchlist</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="stockSearch">Search for a stock:</label>
+                    <input type="text" class="form-control" id="stockSearch" placeholder="Enter stock symbol or name">
+                    <div id="searchResults" class="list-group mt-2"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+  </div>
+
+  <!-- Include Footer -->
+  <%- include('partials/footer') %>
+
+  <!-- Bootstrap JS and dependencies -->
+  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.min.js"></script>
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+  <!-- Add TradingView Widget Script -->
+  <script src="https://s3.tradingview.com/tv.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  
+  <script>
+    // Trade modal functionality
+    function openTradeModal(type, symbol, price, companyName) {
+        // Reset form and alert
+        document.getElementById('tradeAlert').classList.add('d-none');
+        document.getElementById('tradeForm').reset();
+        
+        // Set form values
+        document.getElementById('type').value = type;
+        document.getElementById('symbol').value = symbol;
+        document.getElementById('companyName').value = companyName;
+        document.getElementById('currentPrice').value = price;
+        
+        // Clear quantity and total value
+        document.getElementById('quantity').value = '';
+        document.getElementById('totalValue').value = '';
+        
+        // Get and set available balance
+        fetch('/api/user/balance')
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('availableBalance').value = data.balance.toFixed(2);
+            });
+        
+        // Update modal title based on trade type
+        document.getElementById('tradeModalLabel').textContent = type === 'buy' ? 'Buy Stock' : 'Sell Stock';
+    }
+
+    // Calculate total value when quantity changes
+    document.getElementById('quantity').addEventListener('input', function() {
+        const price = parseFloat(document.getElementById('currentPrice').value);
+        const quantity = parseInt(this.value) || 0;
+        const totalValue = (price * quantity).toFixed(2);
+        document.getElementById('totalValue').value = totalValue;
+    });
+
+    // Execute trade
+    async function executeTrade(event) {
+        event.preventDefault();
+        
+        const form = event.target;
+        const alertElement = document.getElementById('tradeAlert');
+        
+        try {
+            const formData = {
+                type: form.type.value,
+                symbol: form.symbol.value,
+                companyName: document.getElementById('companyName').value,
+                quantity: parseInt(form.quantity.value)
+            };
+            
+            const response = await fetch('/api/trade', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(formData)
+            });
+            
+            const result = await response.json();
+            
+            if (response.ok) {
+                alertElement.textContent = result.message;
+                alertElement.classList.remove('d-none', 'alert-danger');
+                alertElement.classList.add('alert-success');
+                
+                // Refresh page after successful trade
+                setTimeout(() => {
+                    window.location.reload();
+                }, 1500);
+            } else {
+                throw new Error(result.message || 'Trade execution failed');
+            }
+        } catch (error) {
+            alertElement.textContent = error.message;
+            alertElement.classList.remove('d-none', 'alert-success');
+            alertElement.classList.add('alert-danger');
+        }
+        
+        return false;
+    }
+
+    // Function to create stock cards
+    function createStockCard(stock) {
+        const companyName = stock.companyName || 'Unknown Company';
+        return `
+            <div class="col-md-3 mb-3">
+                <div class="stock-card">
+                    <div class="stock-info">
+                        <h5>${stock.symbol}</h5>
+                        <p class="company-name">${companyName}</p>
+                        <p class="price">$${stock.currentPrice.toFixed(2)}</p>
+                        <p class="change ${stock.priceChange >= 0 ? 'positive' : 'negative'}">
+                            ${stock.priceChange >= 0 ? '+' : ''}${stock.priceChange.toFixed(2)}%
+                        </p>
+                        <div class="btn-group">
+                            <button class="btn btn-success btn-sm" onclick="openTradeModal('buy', '${stock.symbol}', ${stock.currentPrice}, '${companyName.replace(/'/g, "\\'")}')">Buy</button>
+                            <button class="btn btn-danger btn-sm" onclick="openTradeModal('sell', '${stock.symbol}', ${stock.currentPrice}, '${companyName.replace(/'/g, "\\'")}')">Sell</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+    }
+
+    // Watchlist functionality
+    document.getElementById('addToWatchlistBtn').addEventListener('click', async function() {
+        const symbol = document.getElementById('stockSymbol').value.toUpperCase();
+        if (!symbol) {
+            alert('Please enter a stock symbol');
+            return;
+        }
+
+        try {
+            const response = await fetch('/api/stocks/watchlist', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ symbol })
+            });
+
+            const result = await response.json();
+            
+            if (result.success) {
+                alert('Stock added to watchlist successfully!');
+                location.reload(); // Refresh to show updated watchlist
+            } else {
+                alert(result.message || 'Failed to add stock to watchlist');
+            }
+        } catch (error) {
+            console.error('Error adding to watchlist:', error);
+            alert('Failed to add stock to watchlist');
+        }
+
+        // Close the modal
+        const modal = bootstrap.Modal.getInstance(document.getElementById('addToWatchlistModal'));
+        modal.hide();
+    });
+
+    // Function to add stock to watchlist from holdings
+    async function addToWatchlist(symbol) {
+        try {
+            const response = await fetch('/api/stocks/watchlist', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ symbol })
+            });
+
+            const result = await response.json();
+            
+            if (result.success) {
+                alert('Stock added to watchlist successfully!');
+                location.reload(); // Refresh to show updated watchlist
+            } else {
+                alert(result.message || 'Failed to add stock to watchlist');
+            }
+        } catch (error) {
+            console.error('Error adding to watchlist:', error);
+            alert('Failed to add stock to watchlist');
+        }
+    }
+    
+    // Initialize TradingView Charts
+    new TradingView.widget({
+        "width": "100%",
+        "height": 400,
+        "symbol": "FOREXCOM:SPXUSD",
+        "interval": "D",
+        "timezone": "Etc/UTC",
+        "theme": "light",
+        "style": "1",
+        "locale": "en",
+        "toolbar_bg": "#f1f3f6",
+        "enable_publishing": false,
+        "hide_side_toolbar": false,
+        "allow_symbol_change": true,
+        "container_id": "main-chart"
+    });
+
+    new TradingView.widget({
+        "width": "100%",
+        "height": 300,
+        "symbol": "FOREXCOM:SPXUSD",
+        "interval": "D",
+        "timezone": "Etc/UTC",
+        "theme": "light",
+        "style": "1",
+        "locale": "en",
+        "toolbar_bg": "#f1f3f6",
+        "enable_publishing": false,
+        "hide_side_toolbar": true,
+        "container_id": "sp500-chart"
+    });
+
+    new TradingView.widget({
+        "width": "100%",
+        "height": 300,
+        "symbol": "NASDAQ:IXIC",
+        "interval": "D",
+        "timezone": "Etc/UTC",
+        "theme": "light",
+        "style": "1",
+        "locale": "en",
+        "toolbar_bg": "#f1f3f6",
+        "enable_publishing": false,
+        "hide_side_toolbar": true,
+        "container_id": "nasdaq-chart"
+    });
+
+    // Enhanced market data update function
+    function updateMarketData() {
+        const markets = {
+            'sp500': { base: 4783.45, volume: 2.5 },
+            'dow': { base: 37248.35, volume: 1.8 },
+            'nasdaq': { base: 15055.65, volume: 3.2 }
+        };
+
+        Object.entries(markets).forEach(([market, data]) => {
+            const change = (Math.random() * 4 - 2).toFixed(2);
+            const price = (data.base * (1 + change/100)).toFixed(2);
+            const volumeChange = (Math.random() * 0.2 - 0.1).toFixed(1);
+            const element = document.getElementById(`${market}-data`);
+            
+            if (element) {
+                // Add animation class
+                const priceElement = element.querySelector('.price');
+                priceElement.classList.add('price-update');
+                
+                // Update price and change
+                setTimeout(() => {
+                    priceElement.textContent = numberWithCommas(price);
+                    priceElement.classList.remove('price-update');
+                }, 100);
+                
+                const changeElement = element.querySelector('.change');
+                changeElement.textContent = `${change > 0 ? '+' : ''}${change}%`;
+                changeElement.className = `change ${change > 0 ? 'positive' : 'negative'}`;
+                
+                // Update volume
+                const volume = (data.volume + parseFloat(volumeChange)).toFixed(1);
+                const volumeElements = element.querySelectorAll('.text-muted');
+                volumeElements[1].textContent = `${volume}B`;
+                
+                // Update progress bar
+                const progressBar = element.querySelector('.progress-bar');
+                const progressWidth = Math.abs(change) * 10 + 40; // Scale the width based on change
+                progressBar.style.width = `${progressWidth}%`;
+                progressBar.className = `progress-bar bg-${change > 0 ? 'success' : 'danger'}`;
+            }
+        });
+    }
+
+    // Format numbers with commas
+    function numberWithCommas(x) {
+        return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+    }
+
+    // Update data more frequently for a more dynamic feel
+    updateMarketData();
+    setInterval(updateMarketData, 3000);
+
+    // Add hover effect to market cards
+    document.querySelectorAll('.market-card').forEach(card => {
+        card.addEventListener('mouseenter', () => {
+            card.style.transform = 'translateY(-5px)';
+        });
+        
+        card.addEventListener('mouseleave', () => {
+            card.style.transform = 'translateY(0)';
+        });
+    });
+
+    // Update watchlist prices periodically
+    setInterval(() => {
+    document.querySelectorAll('.watchlist-item').forEach(item => {
+        const price = (Math.random() * 1000).toFixed(2);
+        const change = (Math.random() * 4 - 2).toFixed(2);
+        const isPositive = change > 0;
+        
+        item.querySelector('.fw-bold').textContent = `$${price}`;
+        item.querySelector('small:last-child').textContent = `${isPositive ? '+' : ''}${change}%`;
+        item.querySelector('small:last-child').className = `small text-${isPositive ? 'success' : 'danger'}`;
+    });
+  }, 5000);
+
+  // Load watchlist function
+  async function loadWatchlist() {
+    try {
+        const response = await fetch('/api/stocks/watchlist');
+        const data = await response.json();
+        
+        if (!data.success) {
+            throw new Error(data.message);
+        }
+
+        const watchlistContainer = document.getElementById('watchlistContainer');
+        if (!data.watchlist || data.watchlist.length === 0) {
+            watchlistContainer.innerHTML = '<p class="text-muted">No stocks in watchlist</p>';
+            return;
+        }
+
+        watchlistContainer.innerHTML = data.watchlist.map(stock => `
+            <div class="watchlist-item d-flex justify-content-between align-items-center p-2 border-bottom">
+                <div>
+                    <h6 class="mb-0">${stock.symbol}</h6>
+                    <small class="text-muted">${stock.name}</small>
+                    <small class="text-muted d-block">${stock.sector}</small>
+                </div>
+                <div class="text-end">
+                    <div class="fw-bold">$${stock.price.toFixed(2)}</div>
+                    <small class="${stock.changePercent >= 0 ? 'text-success' : 'text-danger'}">
+                        ${stock.changePercent >= 0 ? '+' : ''}${stock.changePercent.toFixed(2)}%
+                    </small>
+                    <button class="btn btn-sm btn-outline-danger ms-2" 
+                            onclick="removeFromWatchlist('${stock.symbol}')">
+                        <i class="bi bi-trash"></i>
+                    </button>
+                </div>
+            </div>
+        `).join('');
+    } catch (error) {
+        console.error('Error loading watchlist:', error);
+        const watchlistContainer = document.getElementById('watchlistContainer');
+        watchlistContainer.innerHTML = '<div class="alert alert-danger">Failed to load watchlist</div>';
+    }
+  }
+
+  // Remove from watchlist function
+  async function removeFromWatchlist(symbol) {
+    try {
+        const response = await fetch(`/api/stocks/watchlist/${symbol}`, {
+            method: 'DELETE'
+        });
+
+        const result = await response.json();
+        
+        if (result.success) {
+            alert(`${symbol} removed from watchlist`);
+            loadWatchlist();
+        } else {
+            alert(result.message || 'Failed to remove stock from watchlist');
+        }
+    } catch (error) {
+        console.error('Error removing from watchlist:', error);
+        alert('Failed to remove stock from watchlist');
+    }
+  }
+
+  // Function to refresh holdings data
+    async function refreshHoldings() {
+      try {
+        const response = await fetch('/dashboard/api/portfolio/refresh');
+        const data = await response.json();
+        
+        if (data.success) {
+          const portfolio = data.portfolio;
+          
+          // Update portfolio metrics
+          document.getElementById('totalInvestment').textContent = `$${portfolio.totalInvestment.toFixed(2)}`;
+          document.getElementById('totalValue').textContent = `$${portfolio.totalCurrentValue.toFixed(2)}`;
+          
+          const profitLossElement = document.getElementById('totalProfitLoss');
+          profitLossElement.textContent = `${portfolio.totalProfitLoss >= 0 ? '+' : '-'}$${Math.abs(portfolio.totalProfitLoss).toFixed(2)}`;
+          profitLossElement.className = portfolio.totalProfitLoss >= 0 ? 'text-success' : 'text-danger';
+          
+          const profitLossPercentElement = document.getElementById('totalProfitLossPercent');
+          profitLossPercentElement.textContent = `${portfolio.totalProfitLossPercent >= 0 ? '+' : ''}${portfolio.totalProfitLossPercent.toFixed(2)}%`;
+          profitLossPercentElement.className = portfolio.totalProfitLossPercent >= 0 ? 'text-success' : 'text-danger';
+          
+          // Update holdings table
+          const tableBody = document.getElementById('holdingsTableBody');
+          if (portfolio.holdings && portfolio.holdings.length > 0) {
+            tableBody.innerHTML = portfolio.holdings.map(holding => `
+              <tr>
+                <td><strong>${holding.symbol}</strong></td>
+                <td>${holding.companyName}</td>
+                <td>${holding.quantity}</td>
+                <td>$${holding.avgPrice.toFixed(2)}</td>
+                <td>$${holding.currentPrice.toFixed(2)}</td>
+                <td>$${(holding.quantity * holding.currentPrice).toFixed(2)}</td>
+                <td class="${(holding.currentPrice - holding.avgPrice) * holding.quantity >= 0 ? 'text-success' : 'text-danger'}">
+                  ${(holding.currentPrice - holding.avgPrice) * holding.quantity >= 0 ? '+' : '-'}
+                  $${Math.abs((holding.currentPrice - holding.avgPrice) * holding.quantity).toFixed(2)}
+                </td>
+                <td class="${(holding.currentPrice - holding.avgPrice) / holding.avgPrice * 100 >= 0 ? 'text-success' : 'text-danger'}">
+                  ${((holding.currentPrice - holding.avgPrice) / holding.avgPrice * 100).toFixed(2)}%
+                </td>
+                <td>
+                  <button class="btn btn-outline-success btn-sm" onclick="openTradeModal('buy', '${holding.symbol}', ${holding.currentPrice}, '${holding.companyName}')">
+                    Buy
+                  </button>
+                  <button class="btn btn-outline-danger btn-sm" onclick="openTradeModal('sell', '${holding.symbol}', ${holding.currentPrice}, '${holding.companyName}')">
+                    Sell
+                  </button>
+                </td>
+              </tr>
+            `).join('');
+          } else {
+            tableBody.innerHTML = `
+              <tr>
+                <td colspan="9" class="text-center">
+                  <p class="my-3 text-muted">No holdings found. Start trading to build your portfolio!</p>
+                </td>
+              </tr>
+            `;
+          }
+        }
+      } catch (error) {
+        console.error('Error refreshing holdings:', error);
+      }
+    }
+
+    // Refresh holdings every 30 seconds
+    setInterval(refreshHoldings, 30000);
+
+    // Initialize everything when the page loads
+    document.addEventListener('DOMContentLoaded', function() {
+      loadWatchlist();
+    });
+  </script>
+  <script src="https://unpkg.com/aos@next/dist/aos.js"></script>
+  <script>
+    AOS.init();
+  </script>
+</body>
+</html>

@@ -1,0 +1,84 @@
+<!-- Trade Modal -->
+<div class="modal fade" id="tradeModal" tabindex="-1" aria-labelledby="tradeModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="tradeModalLabel">Execute Trade</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div id="tradeAlert" class="alert d-none" role="alert"></div>
+                <form id="tradeForm" onsubmit="return executeTrade(event)">
+                    <input type="hidden" id="type" name="type">
+                    <input type="hidden" id="symbol" name="symbol">
+                    <input type="hidden" id="companyName" name="companyName">
+                    
+                    <div class="mb-3">
+                        <label class="form-label">Company</label>
+                        <input type="text" class="form-control" id="displayCompanyName" readonly>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">Current Price</label>
+                        <div class="input-group">
+                            <span class="input-group-text">$</span>
+                            <input type="text" class="form-control" id="currentPrice" readonly>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="quantity" class="form-label">Quantity</label>
+                        <input type="number" class="form-control" id="quantity" name="quantity" min="1" required>
+                        <div class="invalid-feedback">
+                            Please enter a valid quantity
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">Total Value</label>
+                        <div class="input-group">
+                            <span class="input-group-text">$</span>
+                            <input type="text" class="form-control" id="totalValue" readonly>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Available Balance</label>
+                        <div class="input-group">
+                            <span class="input-group-text">$</span>
+                            <input type="text" class="form-control" id="availableBalance" readonly>
+                        </div>
+                    </div>
+                    
+                    <div class="d-grid">
+                        <button type="submit" class="btn" id="executeTradeBtn">Execute Trade</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Trade Success Modal -->
+<div class="modal fade" id="tradeSuccessModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Trade Executed Successfully</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="text-center">
+                    <i class="fas fa-check-circle text-success fa-3x mb-3"></i>
+                    <h4 id="successMessage"></h4>
+                    <p id="successDetails" class="text-muted"></p>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <a href="/portfolio" class="btn btn-outline-primary">View Portfolio</a>
+                <a href="/transaction-history" class="btn btn-outline-secondary">View Transactions</a>
+                <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,175 @@
+<!-- Link required CSS and icons -->
+<link rel="stylesheet" href="/css/header-footer.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.0/font/bootstrap-icons.css">
+
+<!-- Scroll to Top Button -->
+<button id="scrollTopBtn" class="scroll-top-btn" title="Go to top">
+    <i class="bi bi-arrow-up"></i>
+</button>
+
+<footer class="footer mt-auto py-5">
+    <div class="container">
+        <div class="row g-4">
+            <!-- Company Info -->
+            <div class="col-lg-4 mb-4 mb-lg-0">
+                <a href="/" class="footer-brand d-inline-flex align-items-center mb-4">
+                    <img src="https://cdn.glitch.me/8744b9b1-55f9-4d29-8fca-c4b1415d9c43/stockbull.png?v=1731384958477" alt="StockBull Logo" class="me-2" height="35">
+                    StockBull
+                </a>
+                <p class="footer-description mb-4">Empowering your financial journey with secure and innovative stock trading solutions.</p>
+                <div class="social-links">
+                    <a href="#" class="social-icon" aria-label="Twitter">
+                        <i class="bi bi-twitter"></i>
+                    </a>
+                    <a href="#" class="social-icon" aria-label="Facebook">
+                        <i class="bi bi-facebook"></i>
+                    </a>
+                    <a href="#" class="social-icon" aria-label="LinkedIn">
+                        <i class="bi bi-linkedin"></i>
+                    </a>
+                    <a href="#" class="social-icon" aria-label="Instagram">
+                        <i class="bi bi-instagram"></i>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Quick Links -->
+            <div class="col-lg-2 col-md-6">
+                <h6 class="footer-heading mb-4">Quick Links</h6>
+                <ul class="footer-links">
+                    <li><a href="/markets/stocks"><i class="bi bi-graph-up me-2"></i>Stocks</a></li>
+                    <li><a href="/markets/etf"><i class="bi bi-pie-chart me-2"></i>ETFs</a></li>
+                    <li><a href="/markets/mutual-funds"><i class="bi bi-cash-stack me-2"></i>Mutual Funds</a></li>
+                    <li><a href="/markets/currency"><i class="bi bi-currency-exchange me-2"></i>Currency</a></li>
+                </ul>
+            </div>
+
+            <!-- Resources -->
+            <div class="col-lg-3 col-md-6">
+                <h6 class="footer-heading mb-4">Resources</h6>
+                <ul class="footer-links">
+                    <li><a href="/blog"><i class="bi bi-journal-text me-2"></i>Blog</a></li>
+                    <li><a href="/market-news"><i class="bi bi-newspaper me-2"></i>Market News</a></li>
+                    <li><a href="/learn"><i class="bi bi-book me-2"></i>Learn Trading</a></li>
+                    <li><a href="/help"><i class="bi bi-question-circle me-2"></i>Help Center</a></li>
+                </ul>
+            </div>
+
+            <!-- Newsletter -->
+            <div class="col-lg-3 col-md-6">
+                <h6 class="footer-heading mb-4">Stay Updated</h6>
+                <p class="footer-newsletter-text mb-3">Subscribe to our newsletter for market insights and updates.</p>
+                <form class="newsletter-form">
+                    <div class="input-group mb-3">
+                        <input type="email" class="form-control" placeholder="Enter your email" aria-label="Email for newsletter">
+                        <button class="btn subscribe-btn" type="submit">Subscribe</button>
+                    </div>
+                </form>
+                <div class="security-badge">
+                    <i class="bi bi-shield-check me-2"></i>
+                    SSL Secured Trading Platform
+                </div>
+            </div>
+        </div>
+
+        <hr class="footer-divider my-4">
+
+        <!-- Footer Bottom -->
+        <div class="footer-bottom">
+            <div class="row align-items-center">
+                <div class="col-md-6 text-center text-md-start">
+                    <p class="copyright-text mb-2 mb-md-0">
+                        &copy; <%= new Date().getFullYear() %> StockBull. All rights reserved.
+                    </p>
+                </div>
+                <div class="col-md-6">
+                    <div class="footer-bottom-links text-center text-md-end">
+                        <a href="/privacy" class="footer-bottom-link">Privacy Policy</a>
+                        <span class="separator mx-2">|</span>
+                        <a href="/terms" class="footer-bottom-link">Terms of Service</a>
+                        <span class="separator mx-2">|</span>
+                        <a href="/contact" class="footer-bottom-link">Contact Us</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- Help Modal -->
+<div class="modal fade" id="helpModal" tabindex="-1" aria-labelledby="helpModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="helpModalLabel">Help Center</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row g-4">
+                    <div class="col-md-6">
+                        <div class="help-category">
+                            <i class="bi bi-book text-primary mb-3"></i>
+                            <h6>Getting Started</h6>
+                            <ul class="list-unstyled">
+                                <li><a href="#">Account Setup</a></li>
+                                <li><a href="#">Trading Basics</a></li>
+                                <li><a href="#">Platform Guide</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="help-category">
+                            <i class="bi bi-shield-check text-primary mb-3"></i>
+                            <h6>Security</h6>
+                            <ul class="list-unstyled">
+                                <li><a href="#">Two-Factor Authentication</a></li>
+                                <li><a href="#">Password Reset</a></li>
+                                <li><a href="#">Security Tips</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="help-category">
+                            <i class="bi bi-wallet2 text-primary mb-3"></i>
+                            <h6>Payments & Withdrawals</h6>
+                            <ul class="list-unstyled">
+                                <li><a href="#">Payment Methods</a></li>
+                                <li><a href="#">Withdrawal Process</a></li>
+                                <li><a href="#">Transaction Fees</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="help-category">
+                            <i class="bi bi-headset text-primary mb-3"></i>
+                            <h6>Support</h6>
+                            <ul class="list-unstyled">
+                                <li><a href="#">Contact Support</a></li>
+                                <li><a href="#">FAQs</a></li>
+                                <li><a href="#">Submit Ticket</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Initialize Scroll to Top Button -->
+<script>
+    const scrollTopBtn = document.getElementById('scrollTopBtn');
+    
+    window.onscroll = function() {
+        if (document.body.scrollTop > 20 || document.documentElement.scrollTop > 20) {
+            scrollTopBtn.style.display = "block";
+        } else {
+            scrollTopBtn.style.display = "none";
+        }
+    };
+
+    scrollTopBtn.onclick = function() {
+        document.body.scrollTop = 0; // For Safari
+        document.documentElement.scrollTop = 0; // For Chrome, Firefox, IE and Opera
+    };
+</script>

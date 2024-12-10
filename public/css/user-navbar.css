@@ -1,0 +1,185 @@
+/* Navigation Items */
+.nav-item {
+    margin: 0 5px;
+    position: relative;
+}
+
+.nav-link {
+    display: flex;
+    align-items: center;
+    padding: 8px 20px;
+    color: #4a5568;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    border-radius: 6px;
+    position: relative;
+    text-decoration: none;
+}
+
+.nav-link i {
+    margin-right: 8px;
+    font-size: 1.1rem;
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+}
+
+.nav-link:hover {
+    color: #2563eb;
+    background: rgba(37, 99, 235, 0.1);
+    transform: translateY(-1px);
+}
+
+.nav-link.active {
+    color: #2563eb;
+    background: rgba(37, 99, 235, 0.1);
+    font-weight: 600;
+}
+
+.nav-link.active i {
+    color: #2563eb;
+}
+
+/* Search Container */
+.search-container {
+    position: relative;
+    max-width: 400px;
+    width: 100%;
+    margin: 0 1rem;
+}
+
+.search-input {
+    width: 100%;
+    padding: 8px 20px 8px 40px;
+    border: 1px solid #e5e7eb;
+    border-radius: 6px;
+    font-size: 0.95rem;
+    color: #4a5568;
+    transition: all 0.3s ease;
+}
+
+.search-icon {
+    position: absolute;
+    left: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #9ca3af;
+}
+
+.search-input:focus {
+    border-color: #2563eb;
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+    outline: none;
+}
+
+/* Wallet Balance */
+.wallet-balance {
+    background: rgba(37, 99, 235, 0.1);
+    color: #2563eb;
+    padding: 8px 20px;
+    border-radius: 6px;
+    font-size: 0.95rem;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.nav-link:hover .wallet-balance {
+    background: rgba(37, 99, 235, 0.15);
+    transform: translateY(-1px);
+}
+
+/* Notification Badge */
+.notification-badge {
+    position: absolute;
+    top: 4px;
+    right: 4px;
+    background: #ef4444;
+    color: white;
+    border-radius: 50%;
+    width: 18px;
+    height: 18px;
+    font-size: 0.75rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 2px solid #ffffff;
+}
+
+/* Navbar Brand */
+.navbar-brand {
+    display: flex;
+    align-items: center;
+    padding: 8px 20px;
+    font-size: 1.4rem;
+    font-weight: 600;
+    color: #1f2937;
+    text-decoration: none;
+    transition: all 0.3s ease;
+}
+
+.navbar-brand:hover {
+    color: #2563eb;
+    transform: translateY(-1px);
+}
+
+.navbar-brand img {
+    height: 32px;
+    margin-right: 8px;
+}
+
+/* Responsive Styles */
+@media (max-width: 991px) {
+    .navbar-collapse {
+        background: white;
+        padding: 1rem;
+        border-radius: 12px;
+        margin-top: 1rem;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    }
+
+    .nav-item {
+        margin: 5px 0;
+    }
+
+    .nav-link {
+        padding: 8px 20px;
+        justify-content: flex-start;
+    }
+
+    .search-container {
+        margin: 1rem 0;
+        max-width: 100%;
+    }
+
+    .wallet-balance {
+        margin-left: auto;
+    }
+}
+
+/* Animations */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.nav-item {
+    animation: fadeIn 0.3s ease forwards;
+    animation-delay: calc(var(--animation-order) * 0.1s);
+}
+
+/* Remove outline on click */
+.navbar-toggler:focus {
+    outline: none;
+    box-shadow: none;
+    border: none;
+    background: none;
+}

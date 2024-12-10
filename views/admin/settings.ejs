@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>System Settings - Admin Dashboard</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="/css/header-footer.css">
+  <link rel="stylesheet" href="/css/navbar.css">
+  <link rel="stylesheet" href="/css/admin-dashboard.css">
+  <style>
+    .settings-page {
+      background-color: #f8f9fa;
+      min-height: 100vh;
+      padding: 0;
+    }
+
+    .page-header {
+      background: #fff;
+      padding: 1.5rem 0;
+      margin-bottom: 1.5rem;
+      border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+    }
+
+    .page-header h1 {
+      font-size: 1.75rem;
+      font-weight: 600;
+      color: #2c3e50;
+      margin-bottom: 0.5rem;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .page-header p {
+      color: #6c757d;
+      font-size: 1rem;
+      margin-bottom: 0;
+    }
+
+    .settings-card {
+      background: #fff;
+      border-radius: 0.75rem;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+      border: 1px solid rgba(0, 0, 0, 0.05);
+      transition: box-shadow 0.2s ease;
+    }
+
+    .settings-card:hover {
+      box-shadow: 0 3px 6px rgba(0, 0, 0, 0.08);
+    }
+
+    .settings-card h2 {
+      font-size: 1.25rem;
+      color: #2c3e50;
+      margin-bottom: 1.25rem;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding-bottom: 1rem;
+      border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+    }
+
+    .settings-section {
+      padding: 1.25rem 0;
+      border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+    }
+
+    .settings-section:last-child {
+      border-bottom: none;
+      padding-bottom: 0;
+    }
+
+    .settings-section h3 {
+      font-size: 1.1rem;
+      color: #2c3e50;
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .settings-section h3 i {
+      color: #4a90e2;
+      font-size: 1rem;
+    }
+
+    .form-switch {
+      padding-left: 2.5rem;
+      margin-bottom: 0.75rem;
+    }
+
+    .form-switch:last-child {
+      margin-bottom: 0;
+    }
+
+    .form-check-input {
+      width: 2.5rem;
+      height: 1.25rem;
+      margin-left: -2.5rem;
+      background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='-4 -4 8 8'%3e%3ccircle r='3' fill='rgba%280, 0, 0, 0.25%29'/%3e%3c/svg%3e");
+      background-position: left center;
+      border-radius: 1.25rem;
+      transition: background-position .15s ease-in-out;
+    }
+
+    .form-check-input:checked {
+      background-position: right center;
+      background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='-4 -4 8 8'%3e%3ccircle r='3' fill='%23fff'/%3e%3c/svg%3e");
+    }
+
+    .form-control, .form-select {
+      border-radius: 0.5rem;
+      border-color: #dee2e6;
+      padding: 0.5rem 0.75rem;
+    }
+
+    .form-control:focus, .form-select:focus {
+      border-color: #4a90e2;
+      box-shadow: 0 0 0 0.2rem rgba(74, 144, 226, 0.25);
+    }
+
+    .form-text {
+      font-size: 0.875rem;
+      margin-top: 0.375rem;
+    }
+
+    .btn-save {
+      background-color: #4a90e2;
+      color: #fff;
+      border: none;
+      padding: 0.5rem 1.25rem;
+      border-radius: 0.5rem;
+      font-weight: 500;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      transition: all 0.2s ease;
+    }
+
+    .btn-save:hover {
+      background-color: #357abd;
+      color: #fff;
+      transform: translateY(-1px);
+    }
+
+    .btn-save:active {
+      transform: translateY(0);
+    }
+
+    .notification-item {
+      padding: 1rem;
+      border-radius: 0.5rem;
+      background: rgba(0, 0, 0, 0.02);
+      margin-bottom: 1rem;
+      transition: all 0.2s ease;
+    }
+
+    .notification-item:hover {
+      background: rgba(0, 0, 0, 0.03);
+    }
+
+    .notification-item:last-child {
+      margin-bottom: 0;
+    }
+
+    .notification-title {
+      font-weight: 500;
+      color: #2c3e50;
+      margin-bottom: 0.25rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .notification-title i {
+      font-size: 1rem;
+    }
+
+    .notification-title i.fa-check-circle {
+      color: #28a745;
+    }
+
+    .notification-title i.fa-exclamation-triangle {
+      color: #ffc107;
+    }
+
+    .notification-title i.fa-info-circle {
+      color: #4a90e2;
+    }
+
+    .notification-meta {
+      font-size: 0.875rem;
+      color: #6c757d;
+    }
+
+    @media (max-width: 768px) {
+      .settings-card {
+        padding: 1.25rem;
+      }
+
+      .settings-section {
+        padding: 1rem 0;
+      }
+
+      .form-switch {
+        padding-left: 2.25rem;
+      }
+
+      .form-check-input {
+        width: 2.25rem;
+        margin-left: -2.25rem;
+      }
+    }
+  </style>
+</head>
+<body class="settings-page">
+  <%- include('../partials/navbar') %>
+  <%- include('../partials/admin-navbar') %>
+
+  <div class="container">
+    <div class="page-header">
+      <h1>
+        <i class="fas fa-cogs text-primary"></i>
+        System Settings
+      </h1>
+      <p>Configure system preferences and manage notifications</p>
+    </div>
+
+    <div class="row">
+      <!-- System Settings -->
+      <div class="col-lg-8">
+        <div class="settings-card">
+          <h2>
+            <i class="fas fa-sliders-h"></i>
+            General Settings
+          </h2>
+          
+          <form id="settingsForm" action="/admin/settings" method="POST">
+            <!-- Email Notifications -->
+            <div class="settings-section">
+              <h3>
+                <i class="fas fa-envelope"></i>
+                Email Notifications
+              </h3>
+              <div class="form-switch">
+                <input type="checkbox" class="form-check-input" id="newUserNotif" name="notifications.newUser" <%= settings.notifications.newUser ? 'checked' : '' %>>
+                <label class="form-check-label" for="newUserNotif">New user registrations</label>
+              </div>
+              <div class="form-switch">
+                <input type="checkbox" class="form-check-input" id="largeTransNotif" name="notifications.largeTransactions" <%= settings.notifications.largeTransactions ? 'checked' : '' %>>
+                <label class="form-check-label" for="largeTransNotif">Large transactions (over $1000)</label>
+              </div>
+              <div class="form-switch">
+                <input type="checkbox" class="form-check-input" id="systemAlertsNotif" name="notifications.systemAlerts" <%= settings.notifications.systemAlerts ? 'checked' : '' %>>
+                <label class="form-check-label" for="systemAlertsNotif">System alerts and warnings</label>
+              </div>
+            </div>
+
+            <!-- Security Settings -->
+            <div class="settings-section">
+              <h3>
+                <i class="fas fa-shield-alt"></i>
+                Security
+              </h3>
+              <div class="mb-3">
+                <label class="form-label">Session Timeout (minutes)</label>
+                <input type="number" class="form-control" name="security.sessionTimeout" value="<%= settings.security.sessionTimeout %>" min="5" max="120">
+                <div class="form-text text-muted">Set how long users can remain inactive before being logged out</div>
+              </div>
+              <div class="form-switch">
+                <input type="checkbox" class="form-check-input" id="twoFactorAuth" name="security.twoFactorAuth" <%= settings.security.twoFactorAuth ? 'checked' : '' %>>
+                <label class="form-check-label" for="twoFactorAuth">Require 2FA for admin actions</label>
+              </div>
+            </div>
+
+            <!-- Display Settings -->
+            <div class="settings-section">
+              <h3>
+                <i class="fas fa-desktop"></i>
+                Display
+              </h3>
+              <div class="mb-3">
+                <label class="form-label">Items per page</label>
+                <select class="form-select" name="display.itemsPerPage">
+                  <option value="10" <%= settings.display.itemsPerPage === 10 ? 'selected' : '' %>>10 items</option>
+                  <option value="25" <%= settings.display.itemsPerPage === 25 ? 'selected' : '' %>>25 items</option>
+                  <option value="50" <%= settings.display.itemsPerPage === 50 ? 'selected' : '' %>>50 items</option>
+                  <option value="100" <%= settings.display.itemsPerPage === 100 ? 'selected' : '' %>>100 items</option>
+                </select>
+                <div class="form-text text-muted">Choose how many items to display per page in lists and tables</div>
+              </div>
+            </div>
+
+            <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-4">
+              <button type="submit" class="btn btn-save">
+                <i class="fas fa-save"></i>
+                Save Changes
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <!-- Recent Notifications -->
+      <div class="col-lg-4">
+        <div class="settings-card">
+          <h2>
+            <i class="fas fa-bell"></i>
+            Recent Notifications
+          </h2>
+          
+          <% if (notifications && notifications.length > 0) { %>
+            <% notifications.forEach(notification => { %>
+              <div class="notification-item">
+                <div class="notification-title">
+                  <i class="fas fa-<%= notification.type === 'success' ? 'check-circle' : notification.type === 'warning' ? 'exclamation-triangle' : 'info-circle' %>"></i>
+                  <%= notification.title %>
+                </div>
+                <div class="notification-meta">
+                  <%= new Date(notification.timestamp).toLocaleDateString() %> at <%= new Date(notification.timestamp).toLocaleTimeString() %>
+                </div>
+                <div class="notification-message">
+                  <%= notification.message %>
+                </div>
+              </div>
+            <% }); %>
+          <% } else { %>
+            <div class="empty-notifications">
+              <i class="fas fa-bell-slash"></i>
+              <p>No recent notifications</p>
+            </div>
+          <% } %>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <%- include('../partials/footer') %>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+  <script>
+    // Form submission handling
+    document.getElementById('settingsForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+      
+      // Show loading state
+      const submitBtn = this.querySelector('button[type="submit"]');
+      const originalText = submitBtn.innerHTML;
+      submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
+      submitBtn.disabled = true;
+
+      // Submit the form
+      this.submit();
+    });
+  </script>
+</body>
+</html>
