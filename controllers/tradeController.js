@@ -134,7 +134,7 @@ exports.executeTrade = async (req, res) => {
         
         const { type, symbol, companyName, quantity, price } = req.body;
         const user = req.user; // Get user from request object (set by ensureUser middleware)
-
+        console.log('user, :')
         // Validate input
         if (!type || !symbol || !companyName || !quantity || !price) {
             return res.status(400).json({
@@ -205,21 +205,21 @@ exports.executeTrade = async (req, res) => {
                 message: 'Invalid trade type'
             });
         }
-
+        console.log('About to Create order:')
         // Create order
         const order = new Order({
             userId: user._id,
             userEmail: user.email,
-            symbol,
-            companyName,
-            type,
-            quantity,
-            price,
+            symbol: symbol,
+            companyName: companyName,
+            type: type,
+            quantity: quantity,
+            price: price,
             total: totalValue,
             status: 'completed',
             orderDate: new Date()
         });
-
+        console.log('order created:')
         // Create transaction
         const transaction = new Transaction({
             userId: user._id,
@@ -235,7 +235,7 @@ exports.executeTrade = async (req, res) => {
             status: 'completed',
             date: new Date()
         });
-
+        console.log('transaction created:')
         try {
             // Save everything and update holdings
             const [savedUser, savedOrder, savedTransaction] = await Promise.all([
@@ -243,7 +243,7 @@ exports.executeTrade = async (req, res) => {
                 order.save(),
                 transaction.save()
             ]);
-
+            console.log('user order updated:')
             await updateHoldings(user._id, user.email, symbol, companyName, type, quantity, price);
 
             console.log('Successfully saved all trade records and updated holdings');
