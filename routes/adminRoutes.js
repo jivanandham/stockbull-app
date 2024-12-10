@@ -243,18 +243,45 @@ router.get('/edit-user', (req, res) => {
 // Update user profile (POST form)
 router.post('/users/:id/edit', isAdmin, async (req, res) => {
   try {
-    const { name, role } = req.body;
-    await User.findByIdAndUpdate(req.params.id, { name, role });
+    const { name, email, role, status, tradingLimit, contactNumber, bio } = req.body;
+    
+    const updatedUser = await User.findByIdAndUpdate(
+      req.params.id,
+      {
+        name,
+        email,
+        role,
+        status,
+        tradingLimit: tradingLimit ? Number(tradingLimit) : undefined,
+        contactNumber,
+        bio
+      },
+      { new: true, runValidators: true }
+    );
+
+    if (!updatedUser) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    // Create audit log
+    await createAuditLog(
+      req.oidc.user.sub,
+      'USER_UPDATE',
+      `Updated user ${updatedUser.email} (Role: ${updatedUser.role})`,
+      'user_management',
+      'info',
+      req
+    );
 
     // Create success notification
     await createNotification(
       req.oidc.user.sub,
       'User Updated',
-      `Successfully updated user: ${req.body.email}`,
+      `Successfully updated user: ${updatedUser.email}`,
       'success'
     );
 
-    res.redirect('/users');
+    res.status(200).json({ message: 'User updated successfully' });
   } catch (err) {
     console.error('Error updating user:', err);
     
@@ -266,7 +293,7 @@ router.post('/users/:id/edit', isAdmin, async (req, res) => {
       'error'
     );
 
-    res.status(500).send('Error updating user');
+    res.status(500).json({ error: 'Failed to update user' });
   }
 });
 

@@ -6,12 +6,9 @@
   <title>Edit User</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <link rel="stylesheet" href="https://unpkg.com/aos@next/dist/aos.css" />
-  <link rel="stylesheet" href="/css/style.css">
-  <link rel="stylesheet" href="/css/header-footer.css">
-  <link rel="stylesheet" href="/css/navbar.css">
-  <link rel="stylesheet" href="/css/admin-navbar.css">
-  <link rel="stylesheet" href="/css/admin-dashboard.css">
+  <link rel="stylesheet" href="/css/styles.css">
+  <link rel="stylesheet" href="/css/admin/admin-navbar.css">
+  <link rel="stylesheet" href="/css/admin/admin-dashboard.css">
 </head>
 <body>
   <%- include('../partials/navbar') %>
@@ -20,14 +17,14 @@
   <div class="container py-4">
     <div class="row justify-content-center">
       <div class="col-lg-8">
-        <div class="dashboard-card" data-aos="fade-up">
+        <div class="dashboard-card">
           <div class="card-header">
             <i class="fas fa-user-edit"></i>
             <span class="badge bg-primary">Edit User</span>
           </div>
           <h3>Edit User Information</h3>
           
-          <form id="editUserForm" class="mt-4">
+          <form id="editUserForm" class="mt-4" action="/admin/users/<%= user._id %>/edit" method="POST">
             <input type="hidden" name="userId" value="<%= user._id %>">
             
             <!-- Basic Information -->
@@ -56,6 +53,17 @@
             <div class="section-title">
               <i class="fas fa-cog"></i>
               Account Settings
+            </div>
+
+            <div class="mb-4">
+              <label class="form-label">User Role</label>
+              <div class="input-group">
+                <span class="input-group-text"><i class="fas fa-user-tag"></i></span>
+                <select class="form-select" name="role">
+                  <option value="user" <%= user.role === 'user' ? 'selected' : '' %>>User</option>
+                  <option value="admin" <%= user.role === 'admin' ? 'selected' : '' %>>Admin</option>
+                </select>
+              </div>
             </div>
 
             <div class="mb-4">
@@ -158,28 +166,23 @@
   <%- include('../partials/footer') %>
   
   <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
-  <script src="https://unpkg.com/aos@next/dist/aos.js"></script>
   <script>
-    AOS.init({
-      duration: 800,
-      once: true
-    });
-
     // Form Submission
     document.getElementById('editUserForm').addEventListener('submit', async (e) => {
       e.preventDefault();
       const formData = new FormData(e.target);
+      const userId = formData.get('userId');
       
       try {
-        const response = await fetch('/admin/users/update', {
+        const response = await fetch(`/admin/users/${userId}/edit`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json'
           },
           body: JSON.stringify({
-            userId: formData.get('userId'),
             name: formData.get('name'),
             email: formData.get('email'),
+            role: formData.get('role'),
             status: formData.get('status'),
             tradingLimit: formData.get('tradingLimit'),
             contactNumber: formData.get('contactNumber'),
@@ -187,15 +190,14 @@
           })
         });
 
-        const data = await response.json();
-        if (data.success) {
-          showAlert('success', 'User updated successfully');
-          setTimeout(() => {
-            window.location.href = '/admin/users';
-          }, 1500);
-        } else {
-          showAlert('error', data.message || 'Failed to update user');
+        if (!response.ok) {
+          throw new Error('Failed to update user');
         }
+
+        showAlert('success', 'User updated successfully');
+        setTimeout(() => {
+          window.location.href = '/admin/users';
+        }, 1500);
       } catch (error) {
         console.error('Error updating user:', error);
         showAlert('error', 'Failed to update user');
