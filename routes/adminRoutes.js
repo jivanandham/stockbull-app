@@ -317,31 +317,47 @@ router.get('/users/:id/transactions', isAdmin, async (req, res) => {
 router.post('/users/:id/delete', isAdmin, async (req, res) => {
   try {
     const userId = req.params.id;
-    
-    // Delete user from Auth0
-    await deleteAuth0User(userId);
+    const userToDelete = await User.findById(userId);
 
-    // Delete user from local database
-    const deletedUser = await User.findByIdAndDelete(userId);
-    
-    if (!deletedUser) {
-      throw new Error('User not found');
+    if (!userToDelete) {
+      req.flash('error', 'User not found');
+      return res.redirect('/admin/users');
     }
 
     // Create audit log
     await createAuditLog(
       req.oidc.user.sub,
-      'User Deletion',
-      `Deleted user: ${deletedUser.email}`,
-      'user',
-      'info',
+      'DELETE_USER',
+      `Deleted user: ${userToDelete.email}`,
+      'USER_MANAGEMENT',
+      'HIGH',
       req
     );
 
+    // Delete user's data
+    await Promise.all([
+      // Delete user's transactions
+      Transaction.deleteMany({ userId: userId }),
+      // Delete user's notifications
+      Notification.deleteMany({ userId: userId }),
+      // Delete the user
+      User.findByIdAndDelete(userId)
+    ]);
+
+    // Create notification for admin
+    await createNotification(
+      req.oidc.user.sub,
+      'User Deleted',
+      `Successfully deleted user: ${userToDelete.email}`,
+      'success'
+    );
+
+    req.flash('success', 'User successfully deleted');
     res.redirect('/admin/users');
   } catch (error) {
     console.error('Error deleting user:', error);
-    res.status(500).send('Error deleting user');
+    req.flash('error', 'Error deleting user');
+    res.redirect('/admin/users');
   }
 });
 

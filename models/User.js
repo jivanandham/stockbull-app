@@ -61,9 +61,6 @@ const UserSchema = new mongoose.Schema({
   timestamps: true // This adds createdAt and updatedAt fields automatically
 });
 
-// Create indexes
-UserSchema.index({ email: 1 }, { unique: true });
-
 const User = mongoose.model('User', UserSchema);
 
 module.exports = User;
