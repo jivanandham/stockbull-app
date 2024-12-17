@@ -313,6 +313,38 @@ router.get('/users/:id/transactions', isAdmin, async (req, res) => {
   }
 });
 
+// Delete user route
+router.post('/users/:id/delete', isAdmin, async (req, res) => {
+  try {
+    const userId = req.params.id;
+    
+    // Delete user from Auth0
+    await deleteAuth0User(userId);
+
+    // Delete user from local database
+    const deletedUser = await User.findByIdAndDelete(userId);
+    
+    if (!deletedUser) {
+      throw new Error('User not found');
+    }
+
+    // Create audit log
+    await createAuditLog(
+      req.oidc.user.sub,
+      'User Deletion',
+      `Deleted user: ${deletedUser.email}`,
+      'user',
+      'info',
+      req
+    );
+
+    res.redirect('/admin/users');
+  } catch (error) {
+    console.error('Error deleting user:', error);
+    res.status(500).send('Error deleting user');
+  }
+});
+
 // View active sessions (assuming sessions are stored in MongoDB)
 router.get('/users/:id/sessions', isAdmin, async (req, res) => {
   const sessionCollection = mongoose.connection.collection('sessions');

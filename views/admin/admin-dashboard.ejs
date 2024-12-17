@@ -12,6 +12,196 @@
   <link rel="stylesheet" href="/css/dashboard-header.css">
   <link rel="stylesheet" href="/css/admin-dashboard.css">
   <link rel="stylesheet" href="https://unpkg.com/aos@next/dist/aos.css" />
+  <style>
+    .admin-dashboard {
+      background-color: #f8f9fa;
+      min-height: 100vh;
+    }
+    .welcome-banner {
+      background: linear-gradient(135deg, #3498db, #2c3e50);
+      border-radius: 16px;
+      padding: 2rem;
+      color: white;
+      margin-bottom: 2rem;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+    .welcome-banner h1 {
+      font-size: 2rem;
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+    }
+    .welcome-banner p {
+      opacity: 0.9;
+      font-size: 1.1rem;
+    }
+    .current-time {
+      font-size: 2rem;
+      font-weight: 600;
+      margin-bottom: 0.25rem;
+    }
+    .current-date {
+      font-size: 1rem;
+      opacity: 0.9;
+    }
+    .quick-stats {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 1.5rem;
+      margin-bottom: 2rem;
+    }
+    .stat-card {
+      background: white;
+      border-radius: 16px;
+      padding: 1.5rem;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      border: 1px solid rgba(0, 0, 0, 0.05);
+    }
+    .stat-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+    }
+    .stat-icon-wrapper {
+      width: 48px;
+      height: 48px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 1rem;
+    }
+    .stat-card:nth-child(1) .stat-icon-wrapper {
+      background: rgba(52, 152, 219, 0.1);
+      color: #3498db;
+    }
+    .stat-card:nth-child(2) .stat-icon-wrapper {
+      background: rgba(46, 204, 113, 0.1);
+      color: #2ecc71;
+    }
+    .stat-card:nth-child(3) .stat-icon-wrapper {
+      background: rgba(155, 89, 182, 0.1);
+      color: #9b59b6;
+    }
+    .stat-card:nth-child(4) .stat-icon-wrapper {
+      background: rgba(241, 196, 15, 0.1);
+      color: #f1c40f;
+    }
+    .stat-icon {
+      font-size: 1.5rem;
+    }
+    .stat-value {
+      font-size: 2rem;
+      font-weight: 600;
+      color: #2c3e50;
+      margin-bottom: 0.25rem;
+    }
+    .stat-label {
+      color: #6c757d;
+      font-size: 0.9rem;
+      margin-bottom: 0.5rem;
+    }
+    .stat-trend {
+      font-size: 0.85rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .stat-trend i {
+      font-size: 0.8rem;
+    }
+    .dashboard-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 1.5rem;
+    }
+    .dashboard-card {
+      background: white;
+      border-radius: 16px;
+      padding: 1.5rem;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      border: 1px solid rgba(0, 0, 0, 0.05);
+    }
+    .dashboard-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+    }
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1rem;
+    }
+    .card-header .icon {
+      font-size: 1.5rem;
+      color: #3498db;
+    }
+    .dashboard-card h3 {
+      font-size: 1.25rem;
+      font-weight: 600;
+      color: #2c3e50;
+      margin-bottom: 0.75rem;
+    }
+    .dashboard-card p {
+      color: #6c757d;
+      font-size: 0.95rem;
+      margin-bottom: 1.5rem;
+      min-height: 40px;
+    }
+    .actions {
+      display: flex;
+      gap: 0.75rem;
+    }
+    .action-btn {
+      flex: 1;
+      padding: 0.75rem 1rem;
+      border-radius: 8px;
+      font-size: 0.9rem;
+      font-weight: 500;
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      transition: all 0.3s ease;
+    }
+    .action-btn.primary {
+      background: #3498db;
+      color: white;
+    }
+    .action-btn.primary:hover {
+      background: #2980b9;
+      transform: translateY(-2px);
+    }
+    .action-btn.secondary {
+      background: #f8f9fa;
+      color: #2c3e50;
+      border: 1px solid #e9ecef;
+    }
+    .action-btn.secondary:hover {
+      background: #e9ecef;
+      transform: translateY(-2px);
+    }
+    .badge {
+      padding: 0.5rem 1rem;
+      border-radius: 50px;
+      font-weight: 500;
+      font-size: 0.8rem;
+    }
+    @media (max-width: 768px) {
+      .welcome-banner {
+        text-align: center;
+      }
+      .current-time, .current-date {
+        text-align: center;
+        margin-top: 1rem;
+      }
+      .quick-stats {
+        grid-template-columns: 1fr;
+      }
+      .dashboard-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
 </head>
 <body class="admin-dashboard">
   <%- include('../partials/navbar') %>
@@ -22,7 +212,7 @@
       <div class="row align-items-center">
         <div class="col-md-8">
           <h1>Welcome Back, <%= user.name %>! 👋</h1>
-          <p class="mb-0">Access your administrative tools and manage your platform efficiently.</p>
+          <p class="mb-0">Monitor your platform's performance and manage administrative tasks efficiently.</p>
         </div>
         <div class="col-md-4 text-md-end mt-3 mt-md-0">
           <div class="current-time" id="currentTime"></div>
@@ -88,7 +278,7 @@
           <span class="badge bg-success">Active</span>
         </div>
         <h3>User Management</h3>
-        <p>Manage user accounts, roles, and permissions with comprehensive controls.</p>
+        <p>Manage user accounts, roles, and permissions efficiently.</p>
         <div class="actions">
           <a href="/admin/users" class="action-btn primary">
             <i class="fas fa-eye"></i>
@@ -107,7 +297,7 @@
           <span class="badge bg-info">Updated</span>
         </div>
         <h3>Analytics & Reports</h3>
-        <p>Access detailed analytics and generate comprehensive reports.</p>
+        <p>Track platform performance with detailed analytics.</p>
         <div class="actions">
           <a href="/admin/user-transactions" class="action-btn primary">
             <i class="fas fa-exchange-alt"></i>
@@ -123,10 +313,10 @@
       <div class="dashboard-card" data-aos="fade-up" data-aos-delay="300">
         <div class="card-header">
           <i class="fas fa-cogs icon"></i>
-          <span class="badge bg-warning">Maintenance</span>
+          <span class="badge bg-warning">Settings</span>
         </div>
         <h3>System Settings</h3>
-        <p>Configure platform settings and customize user experience.</p>
+        <p>Configure and optimize platform settings.</p>
         <div class="actions">
           <a href="/admin/settings" class="action-btn primary">
             <i class="fas fa-sliders-h"></i>
@@ -144,12 +334,12 @@
           <i class="fas fa-user-shield icon"></i>
           <span class="badge bg-primary">Profile</span>
         </div>
-        <h3>Admin Controls</h3>
-        <p>Access administrative tools and manage your profile.</p>
+        <h3>Admin Profile</h3>
+        <p>Manage your admin account and preferences.</p>
         <div class="actions">
           <a href="/admin/profile" class="action-btn primary">
             <i class="fas fa-user"></i>
-            Profile
+            View Profile
           </a>
           <a href="/admin/profile/edit" class="action-btn secondary">
             <i class="fas fa-edit"></i>
@@ -157,71 +347,29 @@
           </a>
         </div>
       </div>
-
-      <!-- <div class="dashboard-card" data-aos="fade-up" data-aos-delay="500">
-        <div class="card-header">
-          <i class="fas fa-shield-alt icon"></i>
-          <span class="badge bg-danger">Important</span>
-        </div>
-        <h3>Security</h3>
-        <p>Monitor and manage platform security settings.</p>
-        <div class="actions">
-          <a href="/admin/security" class="action-btn primary">
-            <i class="fas fa-lock"></i>
-            Security Dashboard
-          </a>
-          <a href="/admin/security/audit" class="action-btn secondary">
-            <i class="fas fa-history"></i>
-            Audit Logs
-          </a>
-        </div>
-      </div> -->
-
-      <!-- <div class="dashboard-card" data-aos="fade-up" data-aos-delay="600">
-        <div class="card-header">
-          <i class="fas fa-life-ring icon"></i>
-          <span class="badge bg-secondary">Support</span>
-        </div>
-        <h3>Support</h3>
-        <p>Access support tools and manage user inquiries.</p>
-        <div class="actions">
-          <a href="/admin/support" class="action-btn primary">
-            <i class="fas fa-headset"></i>
-            Support Center
-          </a>
-          <a href="/admin/tickets" class="action-btn secondary">
-            <i class="fas fa-ticket-alt"></i>
-            View Tickets
-          </a>
-        </div>
-      </div> -->
     </div>
   </div>
 
   <%- include('../partials/footer') %>
-
+  
   <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
   <script src="https://unpkg.com/aos@next/dist/aos.js"></script>
   <script>
     AOS.init({
       duration: 800,
-      once: true,
-      offset: 100
+      once: true
     });
 
-    // Update time and date
-    function updateDateTime() {
+    function updateTime() {
       const now = new Date();
-      
-      // Time
       const timeElement = document.getElementById('currentTime');
+      const dateElement = document.getElementById('currentDate');
+      
       timeElement.textContent = now.toLocaleTimeString('en-US', { 
         hour: '2-digit', 
         minute: '2-digit'
       });
       
-      // Date
-      const dateElement = document.getElementById('currentDate');
       dateElement.textContent = now.toLocaleDateString('en-US', { 
         weekday: 'long',
         year: 'numeric',
@@ -230,9 +378,8 @@
       });
     }
 
-    // Update immediately and then every second
-    updateDateTime();
-    setInterval(updateDateTime, 1000);
+    updateTime();
+    setInterval(updateTime, 1000);
   </script>
 </body>
 </html>
