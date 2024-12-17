@@ -11,6 +11,10 @@ const authConfig = {
     baseURL: process.env.BASE_URL,
     clientID: process.env.AUTH0_CLIENT_ID,
     issuerBaseURL: `https://${process.env.AUTH0_DOMAIN}`,
+    routes: {
+      callback: '/callback',
+      postLogoutRedirect: '/'
+    }
   };
 
 module.exports = authConfig;

@@ -81,12 +81,11 @@ app.use(async (req, res, next) => {
       if (!user) {
         // Create new user if doesn't exist
         user = await User.create({
-          _id: req.oidc.user.sub, // Set _id as Auth0 ID
-          name: req.oidc.user.name,
+          name: req.oidc.user.name || 'User',
           email: req.oidc.user.email,
           picture: req.oidc.user.picture,
           role: 'user', // Default role
-          walletBalance: 0 // Initialize wallet balance
+          walletBalance: 50000 // Initialize wallet balance
         });
         console.log('Created new user:', user);
       }
